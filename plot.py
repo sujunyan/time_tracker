@@ -97,9 +97,12 @@ class DataProcessor:
         total = np.sum(self.task_time_list)
         t_str = strfdelta(total, fmt)
         ax.set_title(f"Total: {t_str}")
-        self.savefig(fig, "pie.png")
+        fig.subplots_adjust(bottom=0.0, left=0.0, right=0.99, top=0.90)        
+        #fig.suptitle(f"Total: {t_str}", verticalalignment='bottom')
+        self.savefig(fig, f"pie.{self.opt.days}day.png")
     
     def savefig(self, fig, name):
+        # fig.subplots_adjust(bottom=0.15, left=0.1, right=0.99, top=0.97, wspace=0.25, hspace=0)
         fig_dir = util.get_fig_dir()
         fig_path = fig_dir.joinpath(name)
         fig.savefig(fig_path)

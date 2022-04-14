@@ -21,6 +21,9 @@ python plot.py --days 1
 Currently, I plan to have the following features:
 - Print statistics summary
 - Plot pie chart
+
+![](figs/pie.png)
+
 - Plot timeline
 - Plot working time along date/month
 
