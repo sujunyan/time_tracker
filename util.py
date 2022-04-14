@@ -1,4 +1,5 @@
 import pathlib
+from datetime import datetime
 
 def strfdelta(tdelta, fmt="{hours:02d}:{minutes:02d}:{seconds:02d}"):
     d = {"days": tdelta.days}
@@ -10,3 +11,13 @@ def get_data_dir():
     cur_dir = pathlib.Path(__file__).parent.resolve()
     data_dir = cur_dir.joinpath("time_tracker_data")
     return data_dir
+
+def get_fig_dir():
+    cur_dir = pathlib.Path(__file__).parent.resolve()
+    fig_dir = cur_dir.joinpath("figs")
+    return fig_dir
+
+def today():
+    t = datetime.today() 
+    t = t.replace(hour=0,second=0,minute=0,microsecond=0)
+    return t

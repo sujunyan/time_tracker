@@ -66,9 +66,6 @@ def loop(t_begin):
         return
 
 if __name__ == '__main__':
-    task_list = [
-        "code","misc","meeting",
-    ]
 
     data_dir = get_data_dir()
     
