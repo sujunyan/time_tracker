@@ -47,27 +47,56 @@ class DataProcessor:
     def task_time_list(self):
         l = [self.task_time(task) for task in self.task_set]
         return l
-    
+
     def print_stat(self):
         print(f"Statistics for previous {self.opt.days} days")
+        fmt = "{hours:02d} hours {minutes:02d} minutes"
         task_time_list = [timedelta(seconds=t) for t in self.task_time_list]
         for (task, t) in zip(self.task_set, task_time_list):
-            t_str = strfdelta(t, "{hours:02d} hours {minutes:02d} minutes")
+            t_str = strfdelta(t, fmt)
             print(f"[{task:10s}]:\t {t_str}")
 
-        t_str = strfdelta(np.sum(task_time_list), "{hours:02d} hours {minutes:02d} minutes")
-        print(f"[Total Time]:\t {t_str}")
+        total = np.sum(task_time_list)
+        t_str = strfdelta(total, fmt)
+        print(f"[Total time]:\t {t_str}")
+        t_str = strfdelta(total/self.opt.days, fmt)
+        print(f"[Time per day]:\t {t_str}")
         print("done")
     
     def plot_pie(self):
         """
         plot pie chart
+        refer to https://matplotlib.org/3.1.1/gallery/pie_and_polar_charts/pie_and_donut_labels.html#sphx-glr-gallery-pie-and-polar-charts-pie-and-donut-labels-py
         """
-        fig, ax = plt.subplots()
+        fig, ax = plt.subplots(figsize=(4, 4), subplot_kw=dict(aspect="equal"))
         # The offset 
+        fmt = "{hours:02d} h {minutes:02d} m"
+        def func(pct):
+            total = np.sum(self.task_time_list)
+            # absolute = timedelta(seconds=pct/100*total)
+            str_list = [f"{t:.1f}" for t in self.task_time_list]
+            tar_s = f"{pct/100*total:.1f}"
+            idx = str_list.index(tar_s)
+            # return "{:.1f}%\n({:s})".format(pct, strfdelta(absolute, "{hours:02d} h {minutes:02d} min"))
+            # return "{:.1f}%".format(pct)
+            return text(idx)
+
+        def text(i):
+            total = np.sum(self.task_time_list)
+            pct = self.task_time_list[i] / total * 100
+            task = self.task_set[i]
+            t = timedelta(seconds=self.task_time_list[i])
+            t_str = strfdelta(t, fmt)
+            return f"{task}\n{t_str}"
+
         explode = np.zeros(len(self.task_set))
-        ax.pie(self.task_time_list, explode=explode, labels=self.task_set, shadow=True, startangle=0, colors=globals.color_list) #, autopct='%1.1f%%')
+        # wedges, texts, autotexts = ax.pie(self.task_time_list, explode=explode, labels=self.task_set, shadow=True, startangle=90, colors=globals.color_list, autopct=func)
+        wedges, texts, autotext = ax.pie(self.task_time_list, explode=explode, wedgeprops=dict(width=1.0), startangle=-90, colors=globals.color_list, autopct=func, shadow=False)
+
         ax.axis('equal')  # Equal aspect ratio ensures that pie is drawn as a circle.
+        total = np.sum(self.task_time_list)
+        t_str = strfdelta(total, fmt)
+        ax.set_title(f"Total: {t_str}")
         self.savefig(fig, "pie.png")
     
     def savefig(self, fig, name):

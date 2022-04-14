@@ -5,6 +5,7 @@ import pandas as pd
 from datetime import datetime, timedelta
 import platform
 from util import get_data_dir, strfdelta
+from globals import task_list
 # from inputimeout import inputimeout, TimeoutOccurred
 
 def read_command(argv):
@@ -77,7 +78,7 @@ if __name__ == '__main__':
     loop(t_begin) 
     t_end = datetime.now()
     t_diff = t_end - t_begin
-    t_diff_tol = timedelta(minutes=0, seconds=5)
+    t_diff_tol = timedelta(minutes=1, seconds=0)
     if t_diff <= t_diff_tol:
         print(f"Total time {t_diff} less than {t_diff_tol}, not record it.")
     else:
