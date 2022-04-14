@@ -24,7 +24,7 @@ Currently, I plan to have the following features:
 
 ![](figs/pie.png)
 
-- Plot timeline
+- Plot timetable
 - Plot working time along date/month
 
 

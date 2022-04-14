@@ -9,24 +9,25 @@ import matplotlib.pyplot as plt
 import globals
 import util
 
-def get_data(data_dir: pathlib.Path, t_begin, t_end=datetime.max):
+def get_data(data_dir: pathlib.Path):
     csv_path_list = list(data_dir.glob("*.csv"))
     df = pd.DataFrame()
     for csv_path in csv_path_list:
         df1 = pd.read_csv(csv_path,sep=",",parse_dates=["start", "end"], )
         df = df.append(df1)
     df = df.set_index("start")
-    if t_end > df.index.max():
-        t_end = df.index.max()
-    return df[t_begin: t_end]
+    return df
 
 class DataProcessor:
     def __init__(self, opt) -> None:
         self.opt = opt
         data_dir = util.get_data_dir()
         self.t_begin = util.today() - timedelta(days=opt.days-1)
-        self.t_end = datetime.max
-        self.df = get_data(data_dir, self.t_begin, self.t_end)
+        df = get_data(data_dir)
+        self.t_end = df.index.max()
+
+        self.df_whole = df
+        self.df = df[self.t_begin: self.t_end]
     
     def task_time(self, task):
         """
@@ -47,6 +48,12 @@ class DataProcessor:
     def task_time_list(self):
         l = [self.task_time(task) for task in self.task_set]
         return l
+    
+    @property
+    def color_dict(self):
+        n = len(self.task_set)
+        z = zip(self.task_set, globals.color_list[:n])
+        return dict(z)
 
     def print_stat(self):
         print(f"Statistics for previous {self.opt.days} days")
@@ -61,7 +68,6 @@ class DataProcessor:
         print(f"[Total time]:\t {t_str}")
         t_str = strfdelta(total/self.opt.days, fmt)
         print(f"[Time per day]:\t {t_str}")
-        print("done")
     
     def plot_pie(self):
         """
@@ -106,6 +112,65 @@ class DataProcessor:
         fig_dir = util.get_fig_dir()
         fig_path = fig_dir.joinpath(name)
         fig.savefig(fig_path)
+    
+    def get_one_day(self, date: datetime):
+        """
+        get data for one day
+        """
+        start = date.replace(hour=0, minute=0, second=0)
+        end = date.replace(hour=23, minute=59, second=59)
+        return self.df_whole[start:end]
+    
+    def plot_timetable(self, days=7):
+        fig, ax = plt.subplots(figsize=(10,6))
+        end_date = util.today()
+        start_date = end_date - timedelta(days=days)
+        date_list = []
+        legend_dict = {}
+        for iday in range(1,days+1):
+            date = start_date + timedelta(days=iday)
+            date_list.append(date)
+            df = self.get_one_day(date)
+            if df.empty:
+                continue
+            for irow in range(len(df)):
+                x = [iday-0.5, iday+0.5]
+                task = df["task"][irow] 
+                start = (df.index[irow] - date).seconds
+                end = (df["end"][irow] - date).seconds
+                y1 = [start, start]
+                y2 = [end, end]
+                color = self.color_dict[task]
+                handle = ax.fill_between(x,y1,y2, color=color, label=task)
+                legend_dict[task] = handle
+            # print(f"For date {date}, df: {df}")
+        ax.set_xticks(range(1,days+1))
+        ax.set_xticklabels([d.strftime("%m/%d") for d in date_list])
+        ax.invert_yaxis()
+        ax.yaxis.grid(ls='--')
+        
+        ax.legend(labels=legend_dict.keys(), handles=legend_dict.values(), loc='center', bbox_to_anchor=(0.5,-0.11), ncol=len(legend_dict))
+        # Need to save twice to get the ytickslabels...
+        # self.savefig(fig, f"timetable.png")
+
+        def tick2label(tick):
+            return strfdelta(tick,fmt="{hours:02d}:{minutes:02d}")
+        
+        def get_yticks():
+            # yticks = ax.get_yticks()
+            ylim = ax.get_ylim()
+            max_y = round(ylim[0]/3600.0)*3600
+            min_y = round(ylim[1]/3600.0)*3600
+            yticks = np.arange(min_y, max_y, 3600)
+            return yticks
+
+        yticks = get_yticks()
+        yticklabels = [tick2label(t) for t in yticks]
+        ax.set_yticks(yticks)
+        ax.set_yticklabels(yticklabels)
+
+        fig.subplots_adjust(bottom=0.15, left=0.05, right=0.99, top=0.97)
+        self.savefig(fig, f"timetable.png")
 
 def read_command(argv):
     from optparse import OptionParser
@@ -127,4 +192,5 @@ if __name__ == "__main__":
     dp = DataProcessor(opt)
     dp.print_stat()
     dp.plot_pie()
+    dp.plot_timetable()
     print("plot.py done.")
