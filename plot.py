@@ -76,7 +76,7 @@ class DataProcessor:
         plot pie chart
         refer to https://matplotlib.org/3.1.1/gallery/pie_and_polar_charts/pie_and_donut_labels.html#sphx-glr-gallery-pie-and-polar-charts-pie-and-donut-labels-py
         """
-        fig, ax = plt.subplots(figsize=(4, 4), subplot_kw=dict(aspect="equal"))
+        fig, ax = plt.subplots(figsize=(6, 6), subplot_kw=dict(aspect="equal"))
         # The offset 
         fmt = "{hours:02d} h {minutes:02d} m"
         def func(pct):
@@ -103,15 +103,20 @@ class DataProcessor:
         def time2str(t):
             return strfdelta(t, fmt)
 
+        ntask = len(self.task_set)
         explode = np.zeros(len(self.task_set))
         # wedges, texts, autotexts = ax.pie(self.task_time_list, explode=explode, labels=self.task_set, shadow=True, startangle=90, colors=globals.color_list, autopct=func)
-        wedges, texts, autotext = ax.pie(self.task_time_list, explode=explode, wedgeprops=dict(width=1.0), startangle=-90, colors=config.color_list, autopct=func, shadow=False)
+
+        wedges, texts, autotext = ax.pie(self.task_time_list, explode=explode, wedgeprops=dict(width=1.0), startangle=-90, colors=config.color_list, autopct=func, shadow=False, labeldistance=None, labels=[text(i) for i in range(ntask)], pctdistance=0.8)
 
         ax.axis('equal')  # Equal aspect ratio ensures that pie is drawn as a circle.
         total = np.sum(self.task_time_list)
         avg_time = total / self.opt.days
-        ax.set_title(f"Total:     {time2str(total)}\nPer day: {time2str(avg_time)}")
-        fig.subplots_adjust(bottom=0.0, left=0.0, right=0.99, top=0.85)        
+        # ax.legend()
+        days = self.opt.days
+        title = f"Total: {time2str(total)}  Average: {time2str(avg_time)} \nfor " + ("1 day" if days == 1 else f"{days} days")
+        ax.set_title(title, pad=6, y=-0.1)
+        fig.subplots_adjust(bottom=0.15, left=-0.05, right=1.0, top=1.0)        
         #fig.suptitle(f"Total: {t_str}", verticalalignment='bottom')
         self.savefig(fig, f"pie.{self.opt.days}day.png")
     
@@ -119,7 +124,7 @@ class DataProcessor:
         # fig.subplots_adjust(bottom=0.15, left=0.1, right=0.99, top=0.97, wspace=0.25, hspace=0)
         fig_dir = util.get_fig_dir()
         fig_path = fig_dir.joinpath(name)
-        fig.savefig(fig_path)
+        fig.savefig(fig_path, dpi=300)
     
     def get_one_day(self, date: datetime):
         """
@@ -132,7 +137,7 @@ class DataProcessor:
         return self.df_whole.loc[mask]
     
     def plot_timetable(self, days=7):
-        fig, ax = plt.subplots(figsize=(10,6))
+        fig, ax = plt.subplots(figsize=(6,6))
         end_date = util.today()
         start_date = end_date - timedelta(days=days)
         date_list = []
@@ -144,7 +149,8 @@ class DataProcessor:
             if df.empty:
                 continue
             for irow in range(len(df)):
-                x = [iday-0.5, iday+0.5]
+                xlen = 0.25
+                x = [iday-xlen, iday+xlen]
                 task = df["task"][irow] 
                 start = (df["start"][irow] - date).seconds
                 end = (df["end"][irow] - date).seconds
@@ -159,7 +165,7 @@ class DataProcessor:
         ax.invert_yaxis()
         ax.yaxis.grid(ls='--')
         
-        ax.legend(labels=legend_dict.keys(), handles=legend_dict.values(), loc='center', bbox_to_anchor=(0.5,-0.11), ncol=len(legend_dict))
+        ax.legend(labels=legend_dict.keys(), handles=legend_dict.values(), loc='center', bbox_to_anchor=(0.5,-0.11), ncol=int(len(legend_dict)/2)+1)
         # Need to save twice to get the ytickslabels...
         # self.savefig(fig, f"timetable.png")
 
@@ -179,8 +185,8 @@ class DataProcessor:
         ax.set_yticks(yticks)
         ax.set_yticklabels(yticklabels)
 
-        fig.subplots_adjust(bottom=0.15, left=0.05, right=0.99, top=0.97)
-        self.savefig(fig, f"timetable.png")
+        fig.subplots_adjust(bottom=0.15, left=0.10, right=0.99, top=0.97)
+        self.savefig(fig, f"timetable.{days}days.png")
 
 def read_command(argv):
     from optparse import OptionParser
@@ -188,7 +194,7 @@ def read_command(argv):
         USAGE:      python main.py --task [taskname]
         """
     parser = OptionParser(usage_str)
-    parser.add_option('--days', dest='days', type=int, default=10)
+    parser.add_option('--days', dest='days', type=int, default=1)
     options, otherjunk = parser.parse_args(argv)
     if len(otherjunk) != 0:
         raise Exception('Command line input not understood: ' + str(otherjunk))
@@ -202,5 +208,5 @@ if __name__ == "__main__":
     dp = DataProcessor(opt)
     dp.print_stat()
     dp.plot_pie()
-    dp.plot_timetable()
+    dp.plot_timetable(days=7)
     print("plot.py done.")
