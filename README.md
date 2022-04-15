@@ -22,7 +22,7 @@ Currently, I plan to have the following features:
 - Print statistics summary
 - Plot pie chart
 
-![](figs/pie.png)
+<img src="figs/pie.png" width="300">
 
 - Plot timetable
 - Plot working time along date/month
