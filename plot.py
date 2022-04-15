@@ -6,7 +6,7 @@ from util import strfdelta
 import sys
 import matplotlib.pyplot as plt
 
-import globals
+import config
 import util
 
 def get_data(data_dir: pathlib.Path):
@@ -54,7 +54,7 @@ class DataProcessor:
     @property
     def color_dict(self):
         n = len(self.task_set)
-        z = zip(self.task_set, globals.color_list[:n])
+        z = zip(self.task_set, config.color_list[:n])
         return dict(z)
 
     def print_stat(self):
@@ -105,7 +105,7 @@ class DataProcessor:
 
         explode = np.zeros(len(self.task_set))
         # wedges, texts, autotexts = ax.pie(self.task_time_list, explode=explode, labels=self.task_set, shadow=True, startangle=90, colors=globals.color_list, autopct=func)
-        wedges, texts, autotext = ax.pie(self.task_time_list, explode=explode, wedgeprops=dict(width=1.0), startangle=-90, colors=globals.color_list, autopct=func, shadow=False)
+        wedges, texts, autotext = ax.pie(self.task_time_list, explode=explode, wedgeprops=dict(width=1.0), startangle=-90, colors=config.color_list, autopct=func, shadow=False)
 
         ax.axis('equal')  # Equal aspect ratio ensures that pie is drawn as a circle.
         total = np.sum(self.task_time_list)
