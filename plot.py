@@ -14,8 +14,8 @@ def get_data(data_dir: pathlib.Path):
     df = pd.DataFrame()
     for csv_path in csv_path_list:
         df1 = pd.read_csv(csv_path,sep=",",parse_dates=["start", "end"], )
-        df = df.append(df1)
-    df = df.set_index("start")
+        df = pd.concat([df, df1])
+    # df = df.set_index("start")
     return df
 
 class DataProcessor:
@@ -24,10 +24,11 @@ class DataProcessor:
         data_dir = util.get_data_dir()
         self.t_begin = util.today() - timedelta(days=opt.days-1)
         df = get_data(data_dir)
-        self.t_end = df.index.max()
+        self.t_end = df["start"].max()
 
         self.df_whole = df
-        self.df = df[self.t_begin: self.t_end]
+        mask = (df["start"] >= self.t_begin) & (df["start"] <= self.t_end)
+        self.df = df.loc[mask]
     
     def task_time(self, task):
         """
@@ -36,7 +37,7 @@ class DataProcessor:
         mask = self.df["task"] == task
         df2 = self.df.loc[mask]
         end_time_arr = np.array(df2["end"])
-        start_time_arr = np.array(df2.index)
+        start_time_arr = np.array(df2["start"])
         total_time = np.sum(end_time_arr - start_time_arr)
         return total_time/ np.timedelta64(1,'s')
     
@@ -119,7 +120,9 @@ class DataProcessor:
         """
         start = date.replace(hour=0, minute=0, second=0)
         end = date.replace(hour=23, minute=59, second=59)
-        return self.df_whole[start:end]
+        df_start_vec = self.df_whole["start"]
+        mask = (df_start_vec >= start) & (df_start_vec <= end)
+        return self.df_whole.loc[mask]
     
     def plot_timetable(self, days=7):
         fig, ax = plt.subplots(figsize=(10,6))
@@ -136,7 +139,7 @@ class DataProcessor:
             for irow in range(len(df)):
                 x = [iday-0.5, iday+0.5]
                 task = df["task"][irow] 
-                start = (df.index[irow] - date).seconds
+                start = (df["start"][irow] - date).seconds
                 end = (df["end"][irow] - date).seconds
                 y1 = [start, start]
                 y2 = [end, end]
@@ -178,7 +181,7 @@ def read_command(argv):
         USAGE:      python main.py --task [taskname]
         """
     parser = OptionParser(usage_str)
-    parser.add_option('--days', dest='days', type=int, default=1)
+    parser.add_option('--days', dest='days', type=int, default=10)
     options, otherjunk = parser.parse_args(argv)
     if len(otherjunk) != 0:
         raise Exception('Command line input not understood: ' + str(otherjunk))

@@ -6,7 +6,6 @@ from datetime import datetime, timedelta
 import platform
 from util import get_data_dir, strfdelta
 from globals import task_list
-# from inputimeout import inputimeout, TimeoutOccurred
 
 def read_command(argv):
     from optparse import OptionParser
@@ -32,15 +31,17 @@ def record(task, start, end, data_dir: pathlib.Path):
     pc_name = platform.node()
     data_path = data_dir.joinpath(f"{pc_name}.csv")
     data_dict = {
-        "task" : task,
-        "start": start,
-        "end": end
+        "task" : [task],
+        "start": [start],
+        "end": [end]
     }
     if not data_path.exists():
         df = pd.DataFrame(columns=["task", "start", "end"])
     else:
         df = pd.read_csv(data_path)
-    df1 = df.append(data_dict, ignore_index=True)
+    df2 = pd.DataFrame(data_dict)
+    df1 = pd.concat([df, df2])
+    # df1 = df.append(data_dict, ignore_index=True)
     df1.to_csv(data_path, sep=",", index=False)
 
 
@@ -49,15 +50,6 @@ def loop(t_begin):
     print("Press 'ctrl-c' to stop.")
     try: 
         while True:
-            #try:
-            #    s = inputimeout("\r",timeout=2)
-            #except TimeoutOccurred:
-            #    s = None
-            #if s == 'c':
-            #    break
-            #elif s is not None:
-            #    print("Press 'c' to stop.")
-
             t_diff: timedelta = datetime.now() - t_begin
             # sys.stdout.write("\r")
             t_diff_str = strfdelta(t_diff)
@@ -78,7 +70,7 @@ if __name__ == '__main__':
     loop(t_begin) 
     t_end = datetime.now()
     t_diff = t_end - t_begin
-    t_diff_tol = timedelta(minutes=1, seconds=0)
+    t_diff_tol = timedelta(minutes=0, seconds=0)
     if t_diff <= t_diff_tol:
         print(f"Total time {t_diff} less than {t_diff_tol}, not record it.")
     else:

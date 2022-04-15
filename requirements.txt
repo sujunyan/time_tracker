@@ -1,2 +1,3 @@
 pandas
-inputimeout
+numpy
+matplotlib
