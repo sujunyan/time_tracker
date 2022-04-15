@@ -43,7 +43,8 @@ class DataProcessor:
     
     @property
     def task_set(self):
-        return sorted(list(set(self.df["task"])))
+        l = sorted(list(set(self.df_whole["task"])))
+        return [x.split(".")[0] for x in l]
     
     @property
     def task_time_list(self):
@@ -91,10 +92,16 @@ class DataProcessor:
         def text(i):
             total = np.sum(self.task_time_list)
             pct = self.task_time_list[i] / total * 100
+            # If it is less than 1%, do not show it.
+            if pct < 1:
+                return ""
             task = self.task_set[i]
             t = timedelta(seconds=self.task_time_list[i])
             t_str = strfdelta(t, fmt)
             return f"{task}\n{t_str}"
+        
+        def time2str(t):
+            return strfdelta(t, fmt)
 
         explode = np.zeros(len(self.task_set))
         # wedges, texts, autotexts = ax.pie(self.task_time_list, explode=explode, labels=self.task_set, shadow=True, startangle=90, colors=globals.color_list, autopct=func)
@@ -102,9 +109,9 @@ class DataProcessor:
 
         ax.axis('equal')  # Equal aspect ratio ensures that pie is drawn as a circle.
         total = np.sum(self.task_time_list)
-        t_str = strfdelta(total, fmt)
-        ax.set_title(f"Total: {t_str}")
-        fig.subplots_adjust(bottom=0.0, left=0.0, right=0.99, top=0.90)        
+        avg_time = total / self.opt.days
+        ax.set_title(f"Total:     {time2str(total)}\nPer day: {time2str(avg_time)}")
+        fig.subplots_adjust(bottom=0.0, left=0.0, right=0.99, top=0.85)        
         #fig.suptitle(f"Total: {t_str}", verticalalignment='bottom')
         self.savefig(fig, f"pie.{self.opt.days}day.png")
     
