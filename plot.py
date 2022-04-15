@@ -76,7 +76,7 @@ class DataProcessor:
         plot pie chart
         refer to https://matplotlib.org/3.1.1/gallery/pie_and_polar_charts/pie_and_donut_labels.html#sphx-glr-gallery-pie-and-polar-charts-pie-and-donut-labels-py
         """
-        fig, ax = plt.subplots(figsize=(6, 6), subplot_kw=dict(aspect="equal"))
+        fig, ax = plt.subplots(figsize=(5, 5), subplot_kw=dict(aspect="equal"))
         # The offset 
         fmt = "{hours:02d} h {minutes:02d} m"
         def func(pct):
