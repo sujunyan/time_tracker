@@ -165,7 +165,7 @@ class DataProcessor:
         plot timebar for n days
         """
 
-        fig, ax = plt.subplots(figsize=(8,4))
+        fig, ax = plt.subplots(figsize=(6,3))
         date_list = self.date_list(n_day)
         t_list = []
         for iday, date in enumerate(date_list):
@@ -176,11 +176,14 @@ class DataProcessor:
             t = np.sum(df["end"] - df["start"])
             t_list.append(t.seconds/3600)
         ax.set_ylabel("hours")
-        ax.bar(date_list, t_list, width=0.5, color="#5c83ec")
+        color = ["#49a2e9", config.color_list[3]][1]
+        ax.bar(date_list, t_list, width=0.5, color=color)
         # ax.set_xticks(range(0,n_day))
         ax.yaxis.grid(ls='--')
+        ax.spines['right'].set_visible(False)
+        ax.spines['top'].set_visible(False)
         ax.set_xticklabels([d.strftime("%m/%d") for d in date_list])
-        fig.subplots_adjust(bottom=0.10, left=0.05, right=0.99, top=0.97)
+        fig.subplots_adjust(bottom=0.10, left=0.08, right=0.99, top=0.97)
         self.savefig(fig, f"timebar.{n_day}days.png")
     
     def plot_timetable(self, days=7):
