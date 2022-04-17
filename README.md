@@ -9,7 +9,7 @@ Use the following command to start a recording
 ```[Python]
 python main.py --task meeting
 ```
-where `meeting` is a task name. One can also change the task list in [globals.py](globals.py).
+where `meeting` is a task name. One can also change the task list in [config.py](config.py).
 
 
 ## Data Analysis 
@@ -25,7 +25,7 @@ Currently, I plan to have the following features:
 <img src="figs/pie.png" width="400">
 
 - Plot timetable
-- Plot working time along date/month
+- Plot working time along date/month (timebar)
 
 
 

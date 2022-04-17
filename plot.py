@@ -5,6 +5,7 @@ import numpy as np
 from util import strfdelta
 import sys
 import matplotlib.pyplot as plt
+from math import ceil, floor
 
 import config
 import util
@@ -22,34 +23,51 @@ class DataProcessor:
     def __init__(self, opt) -> None:
         self.opt = opt
         data_dir = util.get_data_dir()
-        self.t_begin = util.today() - timedelta(days=opt.days-1)
         df = get_data(data_dir)
-        self.t_end = df["start"].max()
-
-        self.df_whole = df
-        mask = (df["start"] >= self.t_begin) & (df["start"] <= self.t_end)
-        self.df = df.loc[mask]
+        self.df = df
+        self.days = min(opt.days, self.total_days)
+        if opt.all:
+            self.days = self.total_days
     
-    def task_time(self, task):
+    def slice_data(self, n):
         """
+        slice data for previous n days
+        """
+        df = self.df
+        t_begin = util.today() - timedelta(days=n-1)
+        t_end = df["start"].max()
+        mask = (df["start"] >= t_begin) & (df["start"] <= t_end)
+        df1 = df.loc[mask]
+        return df1
+    
+    def task_time(self, task, n):
+        """
+        n: analyze data for n days
         return: float in seconds
         """
-        mask = self.df["task"] == task
-        df2 = self.df.loc[mask]
+        df = self.slice_data(n)
+        mask = df["task"] == task
+        df2 = df.loc[mask]
         end_time_arr = np.array(df2["end"])
         start_time_arr = np.array(df2["start"])
         total_time = np.sum(end_time_arr - start_time_arr)
         return total_time/ np.timedelta64(1,'s')
-    
+
+    def task_time_list(self, n=None):
+        if n is None:
+            n = self.days
+        l = [self.task_time(task, n) for task in self.task_set]
+        return l
+
     @property
     def task_set(self):
-        l = sorted(list(set(self.df_whole["task"])))
+        l = sorted(list(set(self.df["task"])))
         return [x.split(".")[0] for x in l]
     
     @property
-    def task_time_list(self):
-        l = [self.task_time(task) for task in self.task_set]
-        return l
+    def total_days(self):
+        t = self.df["end"].max() - self.df["start"].min()
+        return t.days + 1
     
     @property
     def color_dict(self):
@@ -58,9 +76,9 @@ class DataProcessor:
         return dict(z)
 
     def print_stat(self):
-        print(f"Statistics for previous {self.opt.days} days")
+        print(f"Statistics for previous {self.days} days")
         fmt = "{hours:02d} hours {minutes:02d} minutes"
-        task_time_list = [timedelta(seconds=t) for t in self.task_time_list]
+        task_time_list = [timedelta(seconds=t) for t in self.task_time_list(self.days)]
         for (task, t) in zip(self.task_set, task_time_list):
             t_str = strfdelta(t, fmt)
             print(f"[{task:10s}]:\t {t_str}")
@@ -68,7 +86,7 @@ class DataProcessor:
         total = np.sum(task_time_list)
         t_str = strfdelta(total, fmt)
         print(f"[Total time]:\t {t_str}")
-        t_str = strfdelta(total/self.opt.days, fmt)
+        t_str = strfdelta(total/self.days, fmt)
         print(f"[Time per day]:\t {t_str}")
     
     def plot_pie(self):
@@ -79,27 +97,25 @@ class DataProcessor:
         if self.df.empty:
             print("Empty data frame, not plot pie chart.")
             return
+
         fig, ax = plt.subplots(figsize=(5, 5), subplot_kw=dict(aspect="equal"))
         # The offset 
         fmt = "{hours:02d} h {minutes:02d} m"
         def func(pct):
-            total = np.sum(self.task_time_list)
-            # absolute = timedelta(seconds=pct/100*total)
-            str_list = [f"{t:.1f}" for t in self.task_time_list]
+            total = np.sum(self.task_time_list())
+            str_list = [f"{t:.1f}" for t in self.task_time_list()]
             tar_s = f"{pct/100*total:.1f}"
             idx = str_list.index(tar_s)
-            # return "{:.1f}%\n({:s})".format(pct, strfdelta(absolute, "{hours:02d} h {minutes:02d} min"))
-            # return "{:.1f}%".format(pct)
             return text(idx)
 
         def text(i):
-            total = np.sum(self.task_time_list)
-            pct = self.task_time_list[i] / total * 100
+            total = np.sum(self.task_time_list())
+            pct = self.task_time_list()[i] / total * 100
             # If it is less than 1%, do not show it.
             if pct < 1:
                 return ""
             task = self.task_set[i]
-            t = timedelta(seconds=self.task_time_list[i])
+            t = timedelta(seconds=self.task_time_list()[i])
             t_str = strfdelta(t, fmt)
             return f"{task}\n{t_str}"
         
@@ -108,20 +124,19 @@ class DataProcessor:
 
         ntask = len(self.task_set)
         explode = np.zeros(len(self.task_set))
-        # wedges, texts, autotexts = ax.pie(self.task_time_list, explode=explode, labels=self.task_set, shadow=True, startangle=90, colors=globals.color_list, autopct=func)
 
-        wedges, texts, autotext = ax.pie(self.task_time_list, explode=explode, wedgeprops=dict(width=1.0), startangle=-90, colors=config.color_list, autopct=func, shadow=False, labeldistance=None, labels=[text(i) for i in range(ntask)], pctdistance=0.8)
+        wedges, texts, autotext = ax.pie(self.task_time_list(), explode=explode, wedgeprops=dict(width=1.0), startangle=-90, colors=config.color_list, autopct=func, shadow=False, labeldistance=None, labels=[text(i) for i in range(ntask)], pctdistance=0.8)
 
         ax.axis('equal')  # Equal aspect ratio ensures that pie is drawn as a circle.
-        total = np.sum(self.task_time_list)
-        avg_time = total / self.opt.days
+        total = np.sum(self.task_time_list())
+        avg_time = total / self.days
         # ax.legend()
-        days = self.opt.days
+        days = self.days
         title = f"Total: {time2str(total)}  Average: {time2str(avg_time)} \nfor " + ("1 day" if days == 1 else f"{days} days")
         ax.set_title(title, pad=6, y=-0.1)
         fig.subplots_adjust(bottom=0.15, left=-0.05, right=1.0, top=1.0)        
         #fig.suptitle(f"Total: {t_str}", verticalalignment='bottom')
-        self.savefig(fig, f"pie.{self.opt.days}day.png")
+        self.savefig(fig, f"pie.{self.days}day.png")
     
     def savefig(self, fig, name):
         # fig.subplots_adjust(bottom=0.15, left=0.1, right=0.99, top=0.97, wspace=0.25, hspace=0)
@@ -135,25 +150,50 @@ class DataProcessor:
         """
         start = date.replace(hour=0, minute=0, second=0)
         end = date.replace(hour=23, minute=59, second=59)
-        df_start_vec = self.df_whole["start"]
+        df_start_vec = self.df["start"]
         mask = (df_start_vec >= start) & (df_start_vec <= end)
-        return self.df_whole.loc[mask]
+        return self.df.loc[mask]
+    
+    def date_list(self, n):
+        end_date = util.today()
+        start_date = end_date - timedelta(days=n)
+        date_list = [start_date + timedelta(days=iday) for iday in range(1,n+1)]
+        return date_list
+    
+    def plot_timebar(self, n_day):
+        """
+        plot timebar for n days
+        """
+
+        fig, ax = plt.subplots(figsize=(8,4))
+        date_list = self.date_list(n_day)
+        t_list = []
+        for iday, date in enumerate(date_list):
+            df = self.get_one_day(date)
+            if df.empty:
+                t_list.append(0)
+                continue
+            t = np.sum(df["end"] - df["start"])
+            t_list.append(t.seconds/3600)
+        ax.set_ylabel("hours")
+        ax.bar(date_list, t_list, width=0.5, color="#5c83ec")
+        # ax.set_xticks(range(0,n_day))
+        ax.yaxis.grid(ls='--')
+        ax.set_xticklabels([d.strftime("%m/%d") for d in date_list])
+        fig.subplots_adjust(bottom=0.10, left=0.05, right=0.99, top=0.97)
+        self.savefig(fig, f"timebar.{n_day}days.png")
     
     def plot_timetable(self, days=7):
         fig, ax = plt.subplots(figsize=(6,6))
-        end_date = util.today()
-        start_date = end_date - timedelta(days=days)
-        date_list = []
         legend_dict = {}
-        for iday in range(1,days+1):
-            date = start_date + timedelta(days=iday)
-            date_list.append(date)
+        date_list = self.date_list(days)
+        for iday, date in enumerate(date_list):
             df = self.get_one_day(date)
             if df.empty:
                 continue
             for i,row in df.iterrows():
                 xlen = 0.25
-                x = [iday-xlen, iday+xlen]
+                x = [iday+1-xlen, iday+1+xlen]
                 task = row["task"]
                 start = (row["start"] - date).seconds
                 end = (row["end"] - date).seconds
@@ -168,7 +208,7 @@ class DataProcessor:
         ax.invert_yaxis()
         ax.yaxis.grid(ls='--')
         
-        ax.legend(labels=legend_dict.keys(), handles=legend_dict.values(), loc='center', bbox_to_anchor=(0.5,-0.11), ncol=int(len(legend_dict)/2)+1)
+        ax.legend(labels=legend_dict.keys(), handles=legend_dict.values(), loc='center', bbox_to_anchor=(0.5,-0.11), ncol=ceil(len(legend_dict)/2))
         # Need to save twice to get the ytickslabels...
         # self.savefig(fig, f"timetable.png")
 
@@ -178,8 +218,8 @@ class DataProcessor:
         def get_yticks():
             # yticks = ax.get_yticks()
             ylim = ax.get_ylim()
-            max_y = round(ylim[0]/3600.0)*3600
-            min_y = round(ylim[1]/3600.0)*3600
+            max_y = ceil(ylim[0]/3600.0)*3600
+            min_y = floor(ylim[1]/3600.0)*3600
             yticks = np.arange(min_y, max_y, 3600)
             return yticks
 
@@ -197,7 +237,12 @@ def read_command(argv):
         USAGE:      python main.py --task [taskname]
         """
     parser = OptionParser(usage_str)
+    # days for statistic print and pie plot
     parser.add_option('--days', dest='days', type=int, default=1)
+    parser.add_option('--tabdays', dest='tabdays', type=int, default=7)
+    parser.add_option('--linedays', dest='linedays', type=int, default=7)
+    # plot all days
+    parser.add_option('--all', dest='all', action='store_true', default=False)
     options, otherjunk = parser.parse_args(argv)
     if len(otherjunk) != 0:
         raise Exception('Command line input not understood: ' + str(otherjunk))
@@ -209,7 +254,9 @@ if __name__ == "__main__":
     opt = read_command(sys.argv[1:])
     t_begin = util.today()
     dp = DataProcessor(opt)
+    print(dp.total_days)
     dp.print_stat()
     dp.plot_pie()
-    dp.plot_timetable(days=7)
+    dp.plot_timetable(days=opt.tabdays)
+    dp.plot_timebar(opt.linedays)
     print("plot.py done.")
