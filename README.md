@@ -19,8 +19,8 @@ Use the following command to do the data analysis:
 ```[Python]
 python plot.py --days 1
 ```
-All the figures are stored in the [fig/](fig/) folder.
-I plan to have the following features:
+All the figures are stored in the [figs/](figs/) folder.
+It has the following features:
 ### Print statistics summary
 ```
 Statistics for previous 3 days
