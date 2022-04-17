@@ -76,6 +76,9 @@ class DataProcessor:
         plot pie chart
         refer to https://matplotlib.org/3.1.1/gallery/pie_and_polar_charts/pie_and_donut_labels.html#sphx-glr-gallery-pie-and-polar-charts-pie-and-donut-labels-py
         """
+        if self.df.empty:
+            print("Empty data frame, not plot pie chart.")
+            return
         fig, ax = plt.subplots(figsize=(5, 5), subplot_kw=dict(aspect="equal"))
         # The offset 
         fmt = "{hours:02d} h {minutes:02d} m"
@@ -148,12 +151,12 @@ class DataProcessor:
             df = self.get_one_day(date)
             if df.empty:
                 continue
-            for irow in range(len(df)):
+            for i,row in df.iterrows():
                 xlen = 0.25
                 x = [iday-xlen, iday+xlen]
-                task = df["task"][irow] 
-                start = (df["start"][irow] - date).seconds
-                end = (df["end"][irow] - date).seconds
+                task = row["task"]
+                start = (row["start"] - date).seconds
+                end = (row["end"] - date).seconds
                 y1 = [start, start]
                 y2 = [end, end]
                 color = self.color_dict[task]
