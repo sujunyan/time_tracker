@@ -77,7 +77,7 @@ class DataProcessor:
 
     def print_stat(self):
         print(f"Statistics for previous {self.days} days")
-        fmt = "{hours:02d} hours {minutes:02d} minutes"
+        fmt = "{hours:3d} hours {minutes:02d} minutes"
         task_time_list = [timedelta(seconds=t) for t in self.task_time_list(self.days)]
         for (task, t) in zip(self.task_set, task_time_list):
             t_str = strfdelta(t, fmt)
@@ -98,7 +98,7 @@ class DataProcessor:
             print("Empty data frame, not plot pie chart.")
             return
 
-        fig, ax = plt.subplots(figsize=(5, 5), subplot_kw=dict(aspect="equal"))
+        fig, ax = plt.subplots(figsize=(6, 6), subplot_kw=dict(aspect="equal"))
         # The offset 
         fmt = "{hours:02d} h {minutes:02d} m"
         def func(pct):
@@ -243,7 +243,7 @@ def read_command(argv):
     # days for statistic print and pie plot
     parser.add_option('--days', dest='days', type=int, default=1)
     parser.add_option('--tabdays', dest='tabdays', type=int, default=7)
-    parser.add_option('--linedays', dest='linedays', type=int, default=7)
+    parser.add_option('--bardays', dest='bardays', type=int, default=7)
     # plot all days
     parser.add_option('--all', dest='all', action='store_true', default=False)
     options, otherjunk = parser.parse_args(argv)
@@ -261,5 +261,5 @@ if __name__ == "__main__":
     dp.print_stat()
     dp.plot_pie()
     dp.plot_timetable(days=opt.tabdays)
-    dp.plot_timebar(opt.linedays)
+    dp.plot_timebar(opt.bardays)
     print("plot.py done.")

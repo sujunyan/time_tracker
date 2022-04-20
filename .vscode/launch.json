@@ -5,15 +5,18 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Python: Current File",
+            "name": "plot",
             "type": "python",
             "request": "launch",
-            "program": "${file}",
+            "program": "plot.py",
+            "args": [
+                "--all",
+            ],
             "console": "integratedTerminal",
             "justMyCode": true
         },
         {
-            "name": "test",
+            "name": "main",
             "type": "python",
             "request": "launch",
             "program": "main.py",

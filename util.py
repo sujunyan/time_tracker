@@ -5,8 +5,9 @@ import numpy as np
 def strfdelta(tdelta, fmt="{hours:02d}:{minutes:02d}:{seconds:02d}"):
     if np.isscalar(tdelta):
         tdelta = timedelta(seconds=float(tdelta))
+    # d = {"days": tdelta.days}
     d = {"days": tdelta.days}
-    d["hours"], rem = divmod(tdelta.seconds, 3600)
+    d["hours"], rem = divmod(int(tdelta.total_seconds()), 3600)
     d["minutes"], d["seconds"] = divmod(rem, 60)
     return fmt.format(**d)
 
