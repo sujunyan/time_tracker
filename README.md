@@ -19,20 +19,22 @@ Use the following command to do the data analysis:
 ```[Python]
 python plot.py --days 1
 ```
-All the figures are stored in the [figs/](figs/) folder.
+All the figures are stored in the [figs/](figs/) folder. I also add a sample data which contains the real data of the first week since this project. Feel free to delete the sample data for your own use.
+
 It has the following features:
 ### Print statistics summary
 ```
-Statistics for previous 3 days
-[TA        ]:    03 hours 42 minutes
-[code      ]:    02 hours 05 minutes
-[meeting   ]:    00 hours 31 minutes
-[misc      ]:    01 hours 02 minutes
-[presentation]:  02 hours 09 minutes
-[reading   ]:    01 hours 58 minutes
-[writing   ]:    00 hours 56 minutes
-[Total time]:    12 hours 27 minutes
-[Time per day]:  04 hours 09 minutes
+Statistics for previous 7 days
+[TA        ]:      4 hours 29 minutes
+[code      ]:     18 hours 01 minutes
+[meeting   ]:      5 hours 50 minutes
+[misc      ]:      1 hours 02 minutes
+[presentation]:    2 hours 09 minutes
+[reading   ]:      6 hours 31 minutes
+[thinking  ]:      4 hours 15 minutes
+[writing   ]:      1 hours 54 minutes
+[Total time]:     44 hours 15 minutes
+[Time per day]:    6 hours 19 minutes
 ```
 ### Plot pie chart
 
