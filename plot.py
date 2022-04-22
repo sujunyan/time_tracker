@@ -207,11 +207,11 @@ class DataProcessor:
                 legend_dict[task] = handle
             # print(f"For date {date}, df: {df}")
         ax.set_xticks(range(1,days+1))
-        ax.set_xticklabels([d.strftime("%m/%d") for d in date_list])
+        ax.set_xticklabels([d.strftime("%m/%d\n%a") for d in date_list])
         ax.invert_yaxis()
         ax.yaxis.grid(ls='--')
         
-        ax.legend(labels=legend_dict.keys(), handles=legend_dict.values(), loc='center', bbox_to_anchor=(0.5,-0.11), ncol=ceil(len(legend_dict)/2))
+        ax.legend(labels=legend_dict.keys(), handles=legend_dict.values(), loc='center', bbox_to_anchor=(0.5,-0.14), ncol=ceil(len(legend_dict)/2), frameon=False)
         # Need to save twice to get the ytickslabels...
         # self.savefig(fig, f"timetable.png")
 
