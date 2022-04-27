@@ -1,3 +1,10 @@
+plot:
+	python plot.py --days 1 --tabdays 7 --bardays 7
+
+plotAll:
+	python plot.py --all
+
+############
 code:
 	python main.py --task code
 
@@ -7,8 +14,11 @@ figure:
 writing:
 	python main.py --task writing
 
-plot:
-	python plot.py --days 1 --tabdays 7 --bardays 7
+pre:
+	python main.py --task presentation
 
-plotAll:
-	python plot.py --all
+meet:
+	python main.py --task meeting
+
+
+
