@@ -11,7 +11,7 @@ code:
 figure:
 	python main.py --task figure
 
-writing:
+write:
 	python main.py --task writing
 
 pre:
@@ -19,6 +19,9 @@ pre:
 
 meet:
 	python main.py --task meeting
+
+misc:
+	python main.py --task misc
 
 
 
