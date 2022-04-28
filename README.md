@@ -1,6 +1,8 @@
 # Time Tracker 
 This is a time tracker for my personal use. Previously I used pomotodo to record how long I work every day. But it does not support for exporting data. I want to draw some fancy graphs in a more flexible way. So I am thinking of developing my own one.
 
+Another advantage is that I can manually add a record if I forget to start a record.
+
 This "app" is python based and I want to keep it simple and neat. It is now command line based. I am currently not sure if I want to add a simple GUI...
 
 ## Usage
