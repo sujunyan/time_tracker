@@ -20,6 +20,9 @@ pre:
 meet:
 	python main.py --task meeting
 
+read:
+	python main.py --task reading
+
 misc:
 	python main.py --task misc
 
