@@ -1,5 +1,5 @@
 plot:
-	python plot.py --days 1 --tabdays 7 --bardays 7
+	python plot.py --days 1 --tabdays 14 --bardays 14
 
 plotAll:
 	python plot.py --all
@@ -25,6 +25,10 @@ read:
 
 misc:
 	python main.py --task misc
+
+think:
+	python main.py --task thinking
+
 
 
 
