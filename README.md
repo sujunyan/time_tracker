@@ -21,7 +21,7 @@ Use the following command to do the data analysis:
 ```[Python]
 python plot.py --days 1
 ```
-All the figures are stored in the [figs/](figs/) folder. I also add a sample data which contains the real data of the first week since this project. Feel free to delete the sample data for your own use.
+All the figures are stored in the [figs/](figs/) folder. I also add a [sample](time_tracker_data/sample.csv) data which contains the real data of the first week since this project. Feel free to delete the sample data for your own use.
 
 It has the following features:
 ### Print statistics summary
