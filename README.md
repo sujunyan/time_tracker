@@ -44,9 +44,9 @@ Statistics for previous 7 days
 
 ### Plot timetable
 
-<img src="figs/timetable.png" width="400">
+<img src="figs/timetable.png" width="600">
 
 ### Plot working time along date/month (timebar)
 
-<img src="figs/timebar.png" width="400">
+<img src="figs/timebar.png" width="600">
 
