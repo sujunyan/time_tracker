@@ -1,10 +1,12 @@
 from datetime import datetime, timedelta, date
+from email.policy import default
 import pathlib
 import pandas as pd
 import numpy as np
 from util import strfdelta
 import sys
 import matplotlib.pyplot as plt
+import matplotlib as mpl
 from math import ceil, floor
 
 import config
@@ -65,6 +67,13 @@ class DataProcessor:
         return [x.split(".")[0] for x in l]
     
     @property
+    def task_labels(self):
+        if self.opt.cn:
+            return [ config.trans_dict_cn[task] for task in self.task_set]
+        else:
+            return self.task_set
+    
+    @property
     def total_days(self):
         t = self.df["end"].max() - self.df["start"].min()
         return t.days + 1
@@ -114,7 +123,7 @@ class DataProcessor:
             # If it is less than 1%, do not show it.
             if pct < 1:
                 return ""
-            task = self.task_set[i]
+            task = self.task_labels[i]
             t = timedelta(seconds=self.task_time_list()[i])
             t_str = strfdelta(t, fmt)
             return f"{task}\n{t_str}"
@@ -246,6 +255,7 @@ def read_command(argv):
     parser.add_option('--days', dest='days', type=int, default=1)
     parser.add_option('--tabdays', dest='tabdays', type=int, default=7)
     parser.add_option('--bardays', dest='bardays', type=int, default=7)
+    parser.add_option('--cn', dest='cn', action="store_true", default=False)
     # plot all days
     parser.add_option('--all', dest='all', action='store_true', default=False)
     options, otherjunk = parser.parse_args(argv)
@@ -257,6 +267,9 @@ def read_command(argv):
 
 if __name__ == "__main__":
     opt = read_command(sys.argv[1:])
+    if opt.cn:
+        mpl.rc("font", family="sans", serif="SimHei")
+        #mpl.rcParams["font.sans-serif"] = ["KaiTi"]
     t_begin = util.today()
     dp = DataProcessor(opt)
     print(dp.total_days)
