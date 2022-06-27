@@ -112,8 +112,8 @@ class DataProcessor:
         fmt = "{hours:02d} h {minutes:02d} m"
         def func(pct):
             total = np.sum(self.task_time_list())
-            str_list = [f"{round(t):.1f}" for t in self.task_time_list()]
-            tar_s = f"{round(pct/100*total):.1f}"
+            str_list = [f"{t:.1f}" for t in self.task_time_list()]
+            tar_s = f"{pct/100*total:.1f}"
             idx = str_list.index(tar_s)
             return text(idx)
 
