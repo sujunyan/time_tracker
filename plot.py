@@ -231,10 +231,14 @@ class DataProcessor:
         
         def get_yticks():
             # yticks = ax.get_yticks()
-            ylim = ax.get_ylim()
-            max_y = ceil(ylim[0]/3600.0)*3600
-            min_y = floor(ylim[1]/3600.0)*3600
-            yticks = np.arange(min_y, max_y, 3600)
+            ymin,ymax = ax.get_ylim()
+            max_y = round(ymin/3600.0)*3600
+            min_y = round(ymax/3600.0)*3600
+            max_y = min(max_y, 24*3600)
+            min_y = max(min_y, 0)
+            yticks = np.arange(min_y, max_y, 7200)
+            # offset = 7200
+            # ax.set_ylim((max_y+offset, min_y-offset))
             return yticks
 
         yticks = get_yticks()
