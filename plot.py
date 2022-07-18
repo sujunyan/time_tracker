@@ -112,10 +112,14 @@ class DataProcessor:
         fmt = "{hours:02d} h {minutes:02d} m"
         def func(pct):
             total = np.sum(self.task_time_list())
-            str_list = [f"{t:.1f}" for t in self.task_time_list()]
-            tar_s = f"{pct/100*total:.1f}"
-            idx = str_list.index(tar_s)
-            return text(idx)
+            #str_list = [f"{t:.1f}" for t in self.task_time_list()]
+            #tar_s = f"{pct/100*total:.1f}"
+            for it,t in enumerate(self.task_time_list()):
+                tt = pct/100.0*total
+                if abs(t-tt) <= 1e-1:
+                    return text(it)
+            return "NaN"
+            # return text(idx)
 
         def text(i):
             total = np.sum(self.task_time_list())
@@ -173,7 +177,6 @@ class DataProcessor:
         """
         plot timebar for n days
         """
-
         fig, ax = plt.subplots(figsize=(n_day/1.5,3))
         date_list = self.date_list(n_day)
         
