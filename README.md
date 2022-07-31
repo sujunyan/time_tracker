@@ -19,7 +19,7 @@ Some shortcut command can also be found in the [Makefile](Makefile).
 
 Use the following command to do the data analysis:
 ```[Python]
-python plot.py --days 1 [--tabdays] [--bardays]
+python plot.py --days 1 [--tabdays] [--bardays] [--cn]
 ```
 All the figures are stored in the [figs/](figs/) folder. I also add a [sample](time_tracker_data/sample.csv) data which contains the real data of the first week since this project. Feel free to delete the sample data for your own use.
 
