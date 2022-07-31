@@ -13,6 +13,7 @@
                 "--all",
                 "--tabdays","14",
                 "--bardays","14",
+                "--cn",
             ],
             "console": "integratedTerminal",
             "justMyCode": true

@@ -8,6 +8,8 @@ import sys
 import matplotlib.pyplot as plt
 import matplotlib as mpl
 from math import ceil, floor
+import mplfonts
+from mplfonts.bin.cli import init
 
 import config
 import util
@@ -69,9 +71,17 @@ class DataProcessor:
     @property
     def task_labels(self):
         if self.opt.cn:
-            return [ config.trans_dict_cn[task] for task in self.task_set]
+            return [config.trans_dict_cn[task] for task in self.task_set]
         else:
             return self.task_set
+
+    @property
+    def task_label_dict(self):
+        if self.opt.cn:
+            return config.trans_dict_cn
+        else:
+            return config.trans_dict_en
+        
     
     @property
     def total_days(self):
@@ -109,7 +119,10 @@ class DataProcessor:
 
         fig, ax = plt.subplots(figsize=(6, 6), subplot_kw=dict(aspect="equal"))
         # The offset 
-        fmt = "{hours:02d} h {minutes:02d} m"
+        if self.opt.cn:
+            fmt = "{hours:02d}时{minutes:02d}分"
+        else:
+            fmt = "{hours:02d} h {minutes:02d} m"
         def func(pct):
             total = np.sum(self.task_time_list())
             #str_list = [f"{t:.1f}" for t in self.task_time_list()]
@@ -130,7 +143,7 @@ class DataProcessor:
             task = self.task_labels[i]
             t = timedelta(seconds=self.task_time_list()[i])
             t_str = strfdelta(t, fmt)
-            return f"{task}\n{t_str}"
+            return f"{task} ({pct:.1f}%)\n{t_str}"
         
         def time2str(t):
             return strfdelta(t, fmt)
@@ -145,7 +158,11 @@ class DataProcessor:
         avg_time = total / self.days
         # ax.legend()
         days = self.days
-        title = f"Total: {time2str(total)}  Average: {time2str(avg_time)} \nfor " + ("1 day" if days == 1 else f"{days} days")
+        if self.opt.cn:
+            title = f"共计:{time2str(total)}  平均:{time2str(avg_time)} \n 共" + ("1天" if days == 1 else f"{days}天")
+        else:
+            title = f"Total: {time2str(total)}  Average: {time2str(avg_time)} \nfor " + ("1 day" if days == 1 else f"{days} days")
+            
         ax.set_title(title, pad=6, y=-0.1)
         fig.subplots_adjust(bottom=0.15, left=-0.05, right=1.0, top=1.0)        
         #fig.suptitle(f"Total: {t_str}", verticalalignment='bottom')
@@ -188,7 +205,7 @@ class DataProcessor:
                 continue
             t = np.sum(df["end"] - df["start"])
             t_list.append(t.seconds/3600)
-        ax.set_ylabel("hours")
+        ax.set_ylabel("小时" if opt.cn else "hours")
         color = ["#49a2e9", config.color_list[2]][1]
         x = range(0,n_day)
         ax.bar(x, t_list, width=0.5, color=color)
@@ -217,11 +234,19 @@ class DataProcessor:
                 y1 = [start, start]
                 y2 = [end, end]
                 color = self.color_dict[task]
-                handle = ax.fill_between(x,y1,y2, color=color, label=task)
-                legend_dict[task] = handle
+                task_label = self.task_label_dict[task]
+                #print(task_label, self.task_label_dict)
+                handle = ax.fill_between(x,y1,y2, color=color, label=task_label)
+                legend_dict[task_label] = handle
             # print(f"For date {date}, df: {df}")
+        # print(legend_dict)
         ax.set_xticks(range(1,days+1))
-        ax.set_xticklabels([d.strftime("%m/%d\n%a") for d in date_list])
+        if self.opt.cn:
+            week_tran_vec = ["周一", "周二", "周三", "周四", "周五", "周六", "周日"]
+            xticklabels = [d.strftime("%m/%d\n") + week_tran_vec[d.weekday()]  for d in date_list]
+        else:
+            xticklabels = [d.strftime("%m/%d\n%a") for d in date_list]
+        ax.set_xticklabels(xticklabels)
         ax.invert_yaxis()
         ax.yaxis.grid(ls='--')
         
@@ -271,12 +296,10 @@ def read_command(argv):
    
     return options
 
-
 if __name__ == "__main__":
     opt = read_command(sys.argv[1:])
     if opt.cn:
-        mpl.rc("font", family="sans", serif="SimHei")
-        #mpl.rcParams["font.sans-serif"] = ["KaiTi"]
+        init()
     t_begin = util.today()
     dp = DataProcessor(opt)
     print(dp.total_days)

@@ -2,7 +2,10 @@ plot:
 	python plot.py --days 1 --tabdays 14 --bardays 14
 
 plotAll:
-	python plot.py --all
+	python plot.py --all 
+
+plotAllCN:
+	python plot.py --all --cn
 
 ############
 code:
