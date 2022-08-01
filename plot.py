@@ -113,7 +113,7 @@ class DataProcessor:
         plot pie chart
         refer to https://matplotlib.org/3.1.1/gallery/pie_and_polar_charts/pie_and_donut_labels.html#sphx-glr-gallery-pie-and-polar-charts-pie-and-donut-labels-py
         """
-        if self.df.empty:
+        if self.df.empty or sum(self.task_time_list()) == 0:
             print("Empty data frame, not plot pie chart.")
             return
 
@@ -285,8 +285,8 @@ def read_command(argv):
     parser = OptionParser(usage_str)
     # days for statistic print and pie plot
     parser.add_option('--days', dest='days', type=int, default=1)
-    parser.add_option('--tabdays', dest='tabdays', type=int, default=7)
-    parser.add_option('--bardays', dest='bardays', type=int, default=7)
+    parser.add_option('--tabdays', dest='tabdays', type=int, default=14)
+    parser.add_option('--bardays', dest='bardays', type=int, default=14)
     parser.add_option('--cn', dest='cn', action="store_true", default=False)
     # plot all days
     parser.add_option('--all', dest='all', action='store_true', default=False)
