@@ -10,10 +10,10 @@
             "request": "launch",
             "program": "plot.py",
             "args": [
-                "--all",
+                //"--all",
                 "--tabdays","14",
                 "--bardays","14",
-                "--cn",
+                //"--cn",
             ],
             "console": "integratedTerminal",
             "justMyCode": true
