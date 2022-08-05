@@ -298,8 +298,7 @@ def read_command(argv):
 
 if __name__ == "__main__":
     opt = read_command(sys.argv[1:])
-    if opt.cn:
-        init()
+    init()
     t_begin = util.today()
     dp = DataProcessor(opt)
     print(dp.total_days)
