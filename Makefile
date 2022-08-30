@@ -38,6 +38,9 @@ misc:
 think:
 	python main.py --task thinking
 
+ta:
+	python main.py --task TA
+
 
 
 
