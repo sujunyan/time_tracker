@@ -2,7 +2,7 @@ plot:
 	python plot.py --days 1 --tabdays 14 --bardays 14
 
 plotMonth:
-	python plot.py --days 30 --tabdays 14 --bardays 14
+	python plot.py --days 30 --tabdays 30 --bardays 30
 
 plotWeek:
 	python plot.py --days 7 --tabdays 14 --bardays 14
