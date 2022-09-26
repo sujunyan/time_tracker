@@ -128,8 +128,10 @@ class DataProcessor:
             #str_list = [f"{t:.1f}" for t in self.task_time_list()]
             #tar_s = f"{pct/100*total:.1f}"
             for it,t in enumerate(self.task_time_list()):
-                tt = pct/100.0*total
-                if abs(t-tt) <= 1e-1:
+                pct2 = t/total*100
+                # tt = pct/100.0*total
+                if abs(pct-pct2) <= 1e-4:
+                    print(abs(pct2-pct))
                     return text(it)
             return "NaN"
             # return text(idx)
