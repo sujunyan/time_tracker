@@ -1,9 +1,9 @@
 task_list = [
-    "code","misc","meeting","writing","reading","thinking", "TA","presentation", "figure"
+    "code","misc","meeting","writing","reading","thinking", "TA","presentation", "figure", "startup"
     ]
 
 trans_dict_cn = dict(zip(task_list, [
-    "代码","其它","开会","写作","阅读","思考","助教","展示","作图"
+    "代码","其它","开会","写作","阅读","思考","助教","展示","作图","创业"
 ]))
 
 trans_dict_en = dict(zip(task_list, task_list))

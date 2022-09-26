@@ -13,7 +13,10 @@ plotAll:
 plotAllCN:
 	python plot.py --all --cn
 
-############
+
+
+# Some short-cuts
+###############################
 code:
 	python main.py --task code
 
@@ -41,6 +44,5 @@ think:
 ta:
 	python main.py --task TA
 
-
-
-
+startup:
+	python main.py --task startup
