@@ -131,7 +131,6 @@ class DataProcessor:
                 pct2 = t/total*100
                 # tt = pct/100.0*total
                 if abs(pct-pct2) <= 1e-4:
-                    print(abs(pct2-pct))
                     return text(it)
             return "NaN"
             # return text(idx)
