@@ -232,6 +232,9 @@ class DataProcessor:
                 task = row["task"]
                 start = (row["start"] - date).seconds
                 end = (row["end"] - date).seconds
+                # if it is in 00:00 - 04:00, skip it for better illustration.
+                if end <= 3600 * 4:
+                    continue
                 y1 = [start, start]
                 y2 = [end, end]
                 color = self.color_dict[task]
