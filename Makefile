@@ -1,5 +1,5 @@
 plot:
-	python plot.py --days 1 --tabdays 14 --bardays 14
+	python plot.py --days 1 --tabdays 14 --bardays 14 --nots
 
 plotMonth:
 	python plot.py --days 30 --tabdays 30 --bardays 30

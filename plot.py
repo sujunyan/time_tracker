@@ -3,7 +3,7 @@ from email.policy import default
 import pathlib
 import pandas as pd
 import numpy as np
-from util import strfdelta
+from util import strfdelta, today
 import sys
 import matplotlib.pyplot as plt
 import matplotlib as mpl
@@ -172,7 +172,11 @@ class DataProcessor:
     def savefig(self, fig, name):
         # fig.subplots_adjust(bottom=0.15, left=0.1, right=0.99, top=0.97, wspace=0.25, hspace=0)
         fig_dir = util.get_fig_dir()
-        fig_path = fig_dir.joinpath(name)
+        if self.opt.nots:
+            name_s =  name
+        else:
+            name_s = util.today().strftime("%Y-%m-%d") + "." + name
+        fig_path = fig_dir.joinpath(name_s)
         fig.savefig(fig_path, dpi=300)
     
     def get_one_day(self, date: datetime):
@@ -294,6 +298,8 @@ def read_command(argv):
     parser.add_option('--cn', dest='cn', action="store_true", default=False)
     # plot all days
     parser.add_option('--all', dest='all', action='store_true', default=False)
+    # no timestamp prefix
+    parser.add_option('--nots', dest='nots', action='store_true', default=False)
     options, otherjunk = parser.parse_args(argv)
     if len(otherjunk) != 0:
         raise Exception('Command line input not understood: ' + str(otherjunk))
