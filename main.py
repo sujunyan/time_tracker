@@ -29,7 +29,8 @@ def read_command(argv):
 def record(task, start, end, data_dir: pathlib.Path):
     t_diff = end - start
     print(f"\n Record {task}, {start}, {end}.\n Total: {t_diff}.")
-    pc_name = platform.node()
+    pc_name = platform.system() + "-" + platform.release()
+    print(pc_name)
     data_path = data_dir.joinpath(f"{pc_name}.csv")
     data_dict = {
         "task" : [task],
@@ -71,7 +72,7 @@ if __name__ == '__main__':
     loop(t_begin) 
     t_end = datetime.now()
     t_diff = t_end - t_begin
-    t_diff_tol = timedelta(minutes=1, seconds=0)
+    t_diff_tol = timedelta(minutes=0, seconds=0)
     if t_diff <= t_diff_tol:
         print(f"\nTotal time {t_diff} less than {t_diff_tol}, not record it.")
     else:
