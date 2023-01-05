@@ -72,7 +72,7 @@ if __name__ == '__main__':
     loop(t_begin) 
     t_end = datetime.now()
     t_diff = t_end - t_begin
-    t_diff_tol = timedelta(minutes=0, seconds=0)
+    t_diff_tol = timedelta(minutes=1, seconds=0)
     if t_diff <= t_diff_tol:
         print(f"\nTotal time {t_diff} less than {t_diff_tol}, not record it.")
     else:
