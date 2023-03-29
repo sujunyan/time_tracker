@@ -14,6 +14,8 @@ def strfdelta(tdelta, fmt="{hours:02d}:{minutes:02d}:{seconds:02d}"):
 def get_data_dir():
     cur_dir = pathlib.Path(__file__).parent.resolve()
     data_dir = cur_dir.joinpath("time_tracker_data")
+    if not data_dir.exists():
+        raise Exception(f"data_dir: {data_dir} does not exists, you may create one.")
     return data_dir
 
 def get_fig_dir():
