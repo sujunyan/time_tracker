@@ -7,6 +7,9 @@ plotMonth:
 plotWeek:
 	python plot.py --days 7 --tabdays 14 --bardays 14
 
+plotYearCN:
+	python plot.py --days 365 --cn
+
 plotAll:
 	python plot.py --all 
 
