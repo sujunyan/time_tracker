@@ -176,6 +176,10 @@ class DataProcessor:
             name_s =  name
         else:
             name_s = util.today().strftime("%Y-%m-%d") + "." + name
+
+        if self.opt.cn:
+            name_s = "cn." + name_s
+
         fig_path = fig_dir.joinpath(name_s)
         fig.savefig(fig_path, dpi=300)
     
