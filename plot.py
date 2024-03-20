@@ -181,6 +181,7 @@ class DataProcessor:
             name_s = "cn." + name_s
 
         fig_path = fig_dir.joinpath(name_s)
+        print(fig_path)
         fig.savefig(fig_path, dpi=300)
     
     def get_one_day(self, date: datetime):
