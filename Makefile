@@ -20,6 +20,10 @@ plotAllCN:
 
 # Some short-cuts
 ###############################
+
+lang:
+	python main.py --task language
+
 code:
 	python main.py --task code
 
