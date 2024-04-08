@@ -4,6 +4,7 @@ import sys
 import pandas as pd
 from datetime import datetime, timedelta
 import platform
+
 from util import get_data_dir, strfdelta
 from config import task_list
 
