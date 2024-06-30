@@ -63,8 +63,10 @@ def loop(t_begin):
 
 if __name__ == '__main__':
 
+    print("main.py start.")
     data_dir = get_data_dir()
     
+    print(f"data_dir: {data_dir}")
     opt = read_command(sys.argv[1:])
     task = opt.task
 

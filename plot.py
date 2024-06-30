@@ -312,8 +312,10 @@ def read_command(argv):
     return options
 
 if __name__ == "__main__":
+    print("plot.py start.")
     opt = read_command(sys.argv[1:])
     init()
+    print("plot.py init done.")
     t_begin = util.today()
     dp = DataProcessor(opt)
     print(dp.total_days)
