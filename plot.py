@@ -15,7 +15,13 @@ import config
 import util
 
 def get_data(data_dir: pathlib.Path):
-    csv_path_list = list(data_dir.glob("*.csv"))
+    csv_path_list0 = list(data_dir.glob("*.csv"))
+    csv_path_list = []
+    current_year = datetime.now().year
+    for csv_path in csv_path_list0:
+        if csv_path.name.startswith(f"{current_year}"):
+            print(f"Add {csv_path.name} to the list.")
+            csv_path_list.append(csv_path)
     df = pd.DataFrame()
     for csv_path in csv_path_list:
         df1 = pd.read_csv(csv_path,sep=",",parse_dates=["start", "end"], )
