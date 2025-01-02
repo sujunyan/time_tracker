@@ -19,7 +19,8 @@ def get_data(data_dir: pathlib.Path):
     csv_path_list = []
     current_year = datetime.now().year
     for csv_path in csv_path_list0:
-        if csv_path.name.startswith(f"{current_year}"):
+        file_name = csv_path.name
+        if file_name.startswith(f"{current_year}") or file_name.startswith(f"{current_year-1}"):
             print(f"Add {csv_path.name} to the list.")
             csv_path_list.append(csv_path)
     df = pd.DataFrame()
