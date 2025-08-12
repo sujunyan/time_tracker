@@ -45,6 +45,9 @@ read:
 misc:
 	python main.py --task misc
 
+job:
+	python main.py --task job
+
 think:
 	python main.py --task thinking
 

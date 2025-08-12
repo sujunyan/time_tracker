@@ -10,7 +10,8 @@
             "request": "launch",
             "program": "plot.py",
             "args": [
-                "--all",
+                // "--all",
+                "--days", "7",
                 "--tabdays","14",
                 "--bardays","14",
                 "--cn",
