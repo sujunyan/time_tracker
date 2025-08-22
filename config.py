@@ -3,7 +3,7 @@ task_list = [
     ]
 
 trans_dict_cn = dict(zip(task_list, [
-    "代码","其它","开会","写作","阅读","思考","助教","展示","作图","创业","语言", "求职"
+    "代码","琐事","开会","写作","阅读","思考","助教","展示","作图","创业","语言", "求职"
 ]))
 
 trans_dict_en = dict(zip(task_list, task_list))
@@ -22,4 +22,4 @@ color_list = [
     "#92d4d4", 
     "#e7e6fa",  
     "#f08080", 
-    ] # from pomotodo
+] # from pomotodo

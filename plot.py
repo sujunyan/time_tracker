@@ -329,5 +329,5 @@ if __name__ == "__main__":
     dp.print_stat()
     dp.plot_pie()
     dp.plot_timetable(days=opt.tabdays)
-    dp.plot_timebar(opt.bardays)
+    # dp.plot_timebar(opt.bardays)
     print("plot.py done.")
