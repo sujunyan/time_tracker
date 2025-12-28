@@ -45,6 +45,9 @@ read:
 misc:
 	python main.py --task misc
 
+roadtest:
+	python main.py --task roadTest
+
 job:
 	python main.py --task job
 
